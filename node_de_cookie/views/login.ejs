@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <p style="color: red"><%= message %></p>
+
+    <form action="/login" method="POST">
+        <input type="text" name="username" placeholder="username" required />
+        <input type="password" name="password" placeholder="password" required />
+        <button type="submit">OK</button>
+        <button type="reset">reset</button>
+    </form>
+
+    <p>ユーザ名もパスワードもuser01です。ログイン状態は30秒しか維持されません。</p>
+
+</body>
+</html>
