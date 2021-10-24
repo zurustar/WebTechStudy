@@ -1,4 +1,6 @@
 
+# FastAPIでクッキーを使う
+
 
 ## 準備
 
@@ -13,6 +15,8 @@ pip install -r ./requirements.txt
 ```
 uvicorn server:app --host="0.0.0.0" --port=3000 --reload
 ```
+
+ブラウザで http://localhost:3000/index.html にアクセスしてください。
 
 
 ## クッキー
