@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<body>
+
+    <p id="message"></p>
+
+    <a href="/">トップページ</a>
+
+    <script>
+        window.onload = function() {
+            fetch('/auth/logoff', {
+                credentials: "include"
+            }).then(res => {
+                if(res.status !== 200) {
+                    throw new Error("error");
+                }
+                document.getElementById('message').innerHTML = "ログオフしました";
+            }).catch(e => {
+                document.getElementById('message').innerHTML = "ログオフ失敗";
+            })
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<body>
+
+    <p id="message"></p>
+
+
+    <script>
+        window.onload = function() {
+            fetch('/me', {
+                credentials: "include"
+            }).then(res => {
+                if(res.status !== 200) {
+                    throw new Error("エラーが返ってきた");
+                }
+                return res.json();
+            }).then(data => {
+                console.log(data);
+                if(data.username === null) {
+                    document.getElementById("message").innerHTML = '<a href="/login.html">ログイン</a>';
+                } else {
+                    document.getElementById("message").innerHTML = data.username + 'さんこんにちは<br /><a href="/logoff.html">ログオフ</a>';
+                }
+            }).catch(e => {
+                document.getElementById("message").innerHTML = "なにかがおかしいなにかが";
+            })
+        }
+    </script>
+</body>
+</html>
