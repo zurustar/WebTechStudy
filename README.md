@@ -7,6 +7,14 @@ POSTとGETでデータを受け取ってレスポンスを返す方法、クッ�
 # 1. FastAPI
 
 新鋭のAPIサーバ用Webフレームワーク。python。
+ドキュメントがしっかりしているのでいつかはそちらを見たほうがいい。
+
+https://fastapi.tiangolo.com/ja/
+
+APIに特化しているおかげでAPIサーバを作る上で気が利いている感じがする。
+ドキュメントが自動生成されるのが非常に良い。
+
+仕事で使うには新しすぎて説得で苦労する場合もあるかもしれない。(github上で一番古いtagが打たれた日付はバージョン0.1.11の2018年12月16日)
 
 ## 1-0. Pythonの仮想環境
 
@@ -63,6 +71,7 @@ FastAPIのインスタンスを作って、そのインスタンスのgetとい�
 
 ```
 from fastapi import FastAPI
+app = FastAPI()
 @app.get('/index.html')
 def index():
     return {"status": "ok"}
@@ -74,20 +83,28 @@ POSTの場合はpostというアノテーションを使うだけ。
 
 ```
 from fastapi import FastAPI
+app = FastAPI()
 @app.post('/index.html')
 def index():
     return {"status": "ok"}
 ```
 
-## エラーを返す
-
-例外を投げるとエラーレスポンスがかえる。賢い。
-
 ## パスパラメータ
 
 パスの一部が可変の場合への対応。
+アノテーションの部分に受け取る変数名を書き、関数定義の引数にその変数を書いて受け取る。
+関数の引数のほうで型を指定することもできる。
+
+```
+from fastapi import FastAPI
+app = FastAPI()
+@app.get("/items/{item_id}")
+async def read_item(item_id: int):
+    return {"item_id": item_id}
+```
 
 https://fastapi.tiangolo.com/ja/tutorial/path-params/
+
 
 ## クエリパラメータ
 
@@ -102,6 +119,20 @@ https://fastapi.tiangolo.com/ja/tutorial/query-params-str-validations/
 ## リクエストボディ
 
 https://fastapi.tiangolo.com/ja/tutorial/body/
+
+## エラーを返す
+
+例外を投げるとエラーレスポンスがかえる。賢い。
+
+```
+from fastapi import FastAPI, HTTPException
+app = FastAPI()
+@app.get('/{key}')
+def home(key: int):
+    if key >= 100:
+        raise HTTPException(status_code: 404, detail="not found")
+    return {"status": "ok"}
+```
 
 ## クッキーの使い方
 
@@ -150,6 +181,10 @@ https://fastapi.tiangolo.com/ja/tutorial/cookie-params/
 設定と同じメソッドのmax_ageを0にして呼び出すと削除される。
 
 
+## JWT
+
+
+
 ## DBアクセス
 
 長く使うシステムでORマッパ使うとかマジで意味が分からない。PythonでPostgreSQLにアクセスするならpsycopg2がデファクトスタンダードになっていると考えてよいと思う。
@@ -160,6 +195,10 @@ MySQLはしらない。
 
 # 2. node.js / express
 
+フロントエンドエンジニアがサーバサイドにやってくるならば同じ言語で書けるのでnode.jsが良いかも。
+FastAPIもpythonにして速い気がするがやっぱりnodeは速い。
+
+ちなみにgithub上で一番古いtagが打たれた日付はバージョン0.1の2010年1月3日)
 
 ## 2-1. プロジェクトの作成
 
@@ -170,7 +209,73 @@ npx express-generator プロジェクトフォルダへのパス
 APIサーバとして使う場合はviewが要らないだろうから、オプションで--no-viewを指定すると良いかも。
 
 
-## リクエストの受け取り方
+## リクエストの受け取り方とJSONの返し方
+
+
+## エラーを返す
+
+## データの受け取り方
+
+### パスパラメータ
+
+```
+const express = require('express');
+const app = express();
+app.get('/items/:item_id', (req, res) => {
+    res.json({'item_id': item_id});
+});
+```
+
+### クエリパラメータ
+
+req.query.変数名 でとる。
+
+```
+const express = require('express');
+const app = express();
+app.get('/items', (req, res) => {
+    res.json({'item_id': req.query.item_id});
+});
+```
+
+### リクエストボディ　Form編
+
+```
+const express = require('express');
+const parser = require('body-parser');
+conset app = express();
+app.use(parser.urlencoded({ extended: true }));
+app.get('/items', (req, res) => {
+    res.json({'item_id': req.body.item_id});
+})
+```
+
+### リクエストボディ　JSON編
+
+body-parserを使うようにしておいて、req.body.変数名 で取得する。
+
+```
+const express = require('express');
+const parser = require('body-parser');
+conset app = express();
+app.use(parser.json);
+app.get('/items', (req, res) => {
+    res.json({'item_id': req.body.item_id});
+})
+```
+
+## クッキー
+
+### 設定
+
+### 参照
+
+### 削除
+
+## JWT
+
+## DBアクセス
+
 
 # 3. React
 
@@ -190,4 +295,22 @@ npx create-react-app プロジェクトフォルダへのパス
 docker-compose.ymlを作っておいてdocker-compose upであげるのが楽ちんだと思う。
 
 ```
+services:
+    db:
+        image: postgres:13
+        container_name: postgresql
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --no-locale"
+        volumes:
+            - ./pgdata:/var/lib/postgresql/data
+            - ./pginit:/docker-entrypoint-initdb.d
 ```
+
+pgdataフォルダがこのPostgreSQLのデータフォルダになる。
+pginitフォルダ内に拡張子が.sqlのファイルを置き、そのなかにDBを初期化するSQLを書いておく。CREATE TABLEとかINSERTとかそういうやつ。pgdataフォルダが空の時だけそのSQLが実行されて初期化してくれる。
+
+
