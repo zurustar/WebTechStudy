@@ -1,39 +1,41 @@
-
-
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 export default function Top() {
+  const [username, setUsername] = useState("");
+  const [realname, setRealname] = useState("");
 
-    const [username, setUsername] = useState("");
-    const [realname, setRealname] = useState("");
+  useEffect(() => {
+    fetch("http://localhost:8080/me", {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error("failed tyo get my info");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setUsername(data.username);
+        setRealname(data.realname);
+      })
+      .catch((e) => {
+        setUsername("");
+        console.log(e);
+      });
+  }, []);
 
-    useEffect(()=>{
-        fetch('http://localhost:8080/me', {
-            credentials: "include"
-        }).then(res => {
-            if(res.status !== 200) {
-                throw new Error("failed tyo get my info");
-            }
-            return res.json();
-        }).then(data => {
-            setUsername(data.username);
-            setRealname(data.realname);
-        }).catch(e => {
-            setUsername("");
-            console.log(e);
-        });
-    },[]);
-
-    return (
+  return (
+    <>
+      {username === "" ? (
+        <Link to="/login">ログイン</Link>
+      ) : (
         <>
-            {
-                (username==="") ?
-                <Link to="/login">ログイン</Link>
-                :
-                <>{realname}さんようこそ<br /><Link to="/logoff">ログオフ</Link></>
-            }
+          {realname}さんようこそ
+          <br />
+          <Link to="/logoff">ログオフ</Link>
         </>
-    );
-
+      )}
+    </>
+  );
 }
