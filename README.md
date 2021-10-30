@@ -45,6 +45,11 @@ def f(resp: Response):
     return {}
 ```
 
+詳細はこちらを参照。
+
+https://fastapi.tiangolo.com/ja/advanced/response-cookies/
+
+
 ### 参照
 
 APIのエントリポイントとなる関数の引数でCookie型のオブジェクトを受け取る。Optionalとして設定しておかないとCookieが設定されていなかった場合に勝手にエラーを返されるので注意。
@@ -61,7 +66,13 @@ def f(変数名: Optional[str] = Cookie(None)):
     return {}
 ```
 
+詳細はこちらを参照。
 
+https://fastapi.tiangolo.com/ja/tutorial/cookie-params/
+
+### 削除
+
+設定と同じメソッドのmax_ageを0にして呼び出すと削除される。
 
 
 # node.js / express
