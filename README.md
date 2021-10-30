@@ -4,11 +4,11 @@ Web関連の技術の勉強。
 
 POSTとGETでデータを受け取ってレスポンスを返す方法、クッキーを使う方法、ＤＢへのアクセス方法、CORS対応くらいできればあとはなんとかなるんじゃない？
 
-# FastAPI
+# 1. FastAPI
 
 新鋭のAPIサーバ用Webフレームワーク。python。
 
-## Pythonの仮想環境
+## 1-0. Pythonの仮想環境
 
 FastAPIに限った話ではないが。
 
@@ -30,9 +30,9 @@ source ./venv/scripts/activate
 ./.venv/Scripts/Activate.ps1
 ```
 
-## プロジェクト作成
+## 1-1. プロジェクト作成
 
-## ライブラリインストール
+## 1-2. ライブラリインストール
 
 プロジェクトのフォルダにrequirements.txtというファイルを作り以下のようなことを書く。
 
@@ -50,14 +50,14 @@ pip install -r ./requirements.txt
 
 pipで直接ライブラリをインストールしても良いのだが、こうしておくとrequirements.txtを共有することで別の環境でも簡単に必要なライブラリをインストールすることができる。
 
-## 起動
+## 1-3. 起動
 
 ```
 uvicorn server:app --host="0.0.0.0" --port=8080
 ```
 
 
-## GETを受け取ってJSONを返す
+## 1-4. GETを受け取ってJSONを返す
 
 FastAPIのインスタンスを作って、そのインスタンスのgetというアノテーションを使ってこのURLにきたらこのメソッドを実行するんだよ、と教えてあげる。オブジェクトを渡すとJSONを返してくれる。
 
@@ -68,7 +68,7 @@ def index():
     return {"status": "ok"}
 ```
 
-## POSTを受け取ってJSONを返す
+## 1-5. POSTを受け取ってJSONを返す
 
 POSTの場合はpostというアノテーションを使うだけ。
 
@@ -158,10 +158,10 @@ https://www.psycopg.org/
 
 MySQLはしらない。
 
-# node.js / express
+# 2. node.js / express
 
 
-## プロジェクトの作成
+## 2-1. プロジェクトの作成
 
 ```
 npx express-generator プロジェクトフォルダへのパス
@@ -172,8 +172,22 @@ APIサーバとして使う場合はviewが要らないだろうから、オプ�
 
 ## リクエストの受け取り方
 
-# React
+# 3. React
 
 ```
 npx create-react-app プロジェクトフォルダへのパス
+```
+
+ただし、ちゃんとプロジェクトを作る場合はこうではなくて設定ファイルをきちんと手で書くものらしい。
+実際create-react-appではセキュリティに問題があるらしいパッケージがやまほどインストールされるので使っていて恐ろしさがある。
+
+手で書く方法はこれから勉強する予定。
+
+
+
+# 4. おまけ テスト用のPostgreSQLを立てる
+
+docker-compose.ymlを作っておいてdocker-compose upであげるのが楽ちんだと思う。
+
+```
 ```
