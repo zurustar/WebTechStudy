@@ -2,19 +2,37 @@ import express from "express";
 
 const router = express.Router();
 
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
+
+
+class User {
+  username: string;
+  password: string;
+  user_id: string;
+  realname: string;
+  constructor(username: string, password: string, user_id: string, realname: string) {
+    this.username = username;
+    this.password = password;
+    this.user_id = user_id;
+    this.realname = realname;
+  }
+}
 
 const db = [
-  { username: "user01", password: "user01", user_id: "100", realname: "ore" },
+  new User("user01", "user01", "100", "ore"),
+  new User("user02", "user02", "101", "anata"),
 ];
 
 const secretKey = "fjkfjkfjkfjkfjk";
 
-const generateJWT = (user_id: string) => {
+
+
+
+function generateJWT(user_id: string): string {
   return jwt.sign({ sub: user_id }, secretKey, { expiresIn: "1h" });
 };
 
-const setToken = (user_id: string, res: express.Response) => {
+function setToken(user_id: string, res: express.Response): string {
   let token = generateJWT(user_id);
   res.cookie("access_token", token, {
     maxAge: 60 * 1000,
@@ -23,22 +41,32 @@ const setToken = (user_id: string, res: express.Response) => {
   return token;
 };
 
-const verifyToken = (req: express.Request, res: express.Response, next) => {
+function getUserId(req: {user_id: string}) {
+  return req.user_id;
+}
+
+function verifyToken(req: express.Request): string {
   if (req.cookies.access_token) {
-    jwt.verify(req.cookies.access_token, secretKey, (err: Error, payload: Object) => {
-      if (!err) {
-        req.user_id = payload.sub;
+    try {
+      let payload = jwt.verify(req.cookies.access_token, secretKey);
+      if(typeof(payload)==="object") {
+        if(typeof(payload.sub) !== 'undefined') {
+          return payload.sub;
+        }
       }
-    });
+    } catch(err: any) {
+      ;
+    }
   }
-  next();
+  return "";
 };
 
-function searchUserById(user_id: string) {
-  user_id = parseInt(user_id, 10);
-  for (let i = 0; i < db.length; i++) {
-    if (db[i].user_id === user_id) {
-      return db[i];
+function searchUserById(user_id: string): (User | null) {
+  if(user_id !== "") {
+    for (let i = 0; i < db.length; i++) {
+      if (db[i].user_id === user_id) {
+        return db[i];
+      }
     }
   }
   console.log("  NOT found");
@@ -58,14 +86,17 @@ function searchUserById(user_id: string) {
  *       description: ユーザ名とリアルネームを返すよ
  *
  */
-router.get("/me", verifyToken, function (req: express.Request, res: express.Response) {
-  let user = searchUserById(req.user_id);
-  if (user !== null) {
-    setToken(user.usr_id, res);
-    res.json({ username: user.username, realname: user.realname });
-  } else {
-    res.json({ username: "" });
+router.get("/me", function (req: express.Request, res: express.Response) {
+  let user_id = verifyToken(req);
+  if(user_id !== "") {
+    let user = searchUserById(user_id);
+    if (user !== null) {
+      setToken(user_id, res);
+      res.json({ username: user.username, realname: user.realname });
+      return
+    }
   }
+  res.json({ username: "" });
 });
 
 function searchUserByUsernameAndPassword(username: string, password: string) {
