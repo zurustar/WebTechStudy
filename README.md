@@ -305,6 +305,28 @@ app.use(
 書く内容はがんばってここを読み解く。
 https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md
 
+## TypeScript の利用
+
+TypeScript は Microsoft が開発している AltJS のひとつ。静的型付けで安全なコードを書きやすい。トランスパイラを用いて JavaScript に変換することで従来の JavaScript 環境で実行することができる。
+
+### インストール
+
+```
+npm install typescript
+```
+
+### 設定ファイルの生成
+
+```
+npx tsc --init
+```
+
+設定ファイルである tsconfig.json が生成されるので、これを書き換えていい感じにしていく。
+
+### express とともに使う
+
+実行時に ts ファイルを変換して JavaScript 化させるのが良いのではないでしょうか。
+
 # 3. React
 
 ```
