@@ -1,19 +1,38 @@
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 
-var indexRouter = require("./routes/index");
+const indexRouter = require("./routes/index");
 
-var app = express();
+const app = express();
 
-var cors = require("cors");
+const cors = require("cors");
 app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
     optionsSuccessStatus: 200,
   })
+);
+
+// ドキュメント生成用
+const swaggerUi = require("swagger-ui-express");
+const swaggerJSDoc = require("swagger-jsdoc");
+app.use(
+  "/spec",
+  swaggerUi.serve,
+  swaggerUi.setup(
+    swaggerJSDoc({
+      swaggerDefinition: {
+        info: {
+          title: "じっけんAPI",
+          version: "0.0.1",
+        },
+      },
+      apis: ["./app.js", "./routes/index.js"],
+    })
+  )
 );
 
 app.use(logger("dev"));

@@ -44,6 +44,19 @@ function searchUserById(user_id) {
   return null;
 }
 
+/**
+ * @swagger
+ * /me:
+ *   get:
+ *     description: ログインしているユーザの情報を返却する
+ *   produces:
+ *     - application/json
+ *   parameters:
+ *   respones:
+ *     200:
+ *       description: ユーザ名とリアルネームを返すよ
+ *
+ */
 router.get("/me", verifyToken, function (req, res) {
   let user = searchUserById(req.user_id);
   if (user !== null) {
@@ -63,6 +76,21 @@ function searchUserByUsernameAndPassword(username, password) {
   return null;
 }
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     description: ログインします。
+ *   produces:
+ *     - application/json
+ *   parameters:
+ *   respones:
+ *     200:
+ *       description: tokenを返す。
+ *     404:
+ *       description: ユーザ名とパスワードが一致するユーザがいなかった。
+ *
+ */
 router.post("/login", function (req, res) {
   let user = searchUserByUsernameAndPassword(
     req.body.username,
@@ -76,6 +104,17 @@ router.post("/login", function (req, res) {
   }
 });
 
+/**
+ * @swagger
+ * /logoff:
+ *   get:
+ *     description: ログオフします。クッキーの無効化により実現。
+ *   produces:
+ *     - application/json
+ *   responses:
+ *     200:
+ *       description: 成功
+ */
 router.get("/logoff", function (req, res) {
   res.clearCookie("access_token");
   res.json({ message: "ok" });
