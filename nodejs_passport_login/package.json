@@ -1,0 +1,32 @@
+{
+  "name": "nodejs_passport_login",
+  "version": "1.0.0",
+  "description": "以下の動画を参考に作ってみました。\r 動画では JavaScript ですがここでは TypeScript を使います。",
+  "main": "index.js",
+  "scripts": {
+    "devStart": "nodemon dist/server.js",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "ejs": "^3.1.6",
+    "express": "^4.17.2",
+    "express-flash": "^0.0.2",
+    "express-session": "^1.17.2",
+    "passport": "^0.5.2",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/express-flash": "^0.0.2",
+    "@types/express-session": "^1.17.4",
+    "@types/passport": "^1.0.7",
+    "@types/passport-local": "^1.0.34",
+    "dotenv": "^14.1.0",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.5.4"
+  }
+}
