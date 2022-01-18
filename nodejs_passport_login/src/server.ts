@@ -8,6 +8,7 @@ let dummy_database = [];
 
 const app = express();
 
+// テンプレートエンジンとしてejsを使う。
 app.set("views", path.join(__dirname, "views"));
 app.set("view eingine", "ejs");
 app.use(express.urlencoded({ extended: false }));
@@ -38,7 +39,7 @@ const verify = (username, password, done) => {
   return done(null, null, { message: "not found" });
 };
 
-//
+// 認証方法の設定
 const strategy = new LocalStrategy(
   {
     usernameField: "login_id",
@@ -46,8 +47,11 @@ const strategy = new LocalStrategy(
   },
   verify
 );
-
 passport.use(strategy);
+
+passport.serializeUser((user, done) => done(null, JSON.stringify(user)));
+passport.deserializeUser((user: string, done) => done(null, JSON.parse(user)));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -80,8 +84,9 @@ app.post("/register", (req, res: express.Response) => {
 });
 
 app.get("/", (req, res: express.Response) => {
-  const user = req.user ?? {};
-  res.render("index.ejs", { user: user });
+  console.log(req.session);
+  console.log(req.user);
+  res.render("index.ejs", { user: req.user });
 });
 
 app.listen(3000);
