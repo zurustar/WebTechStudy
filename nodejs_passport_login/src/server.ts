@@ -1,5 +1,6 @@
 import path from "path";
 import express from "express";
+import session from "express-session";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 
@@ -11,34 +12,56 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view eingine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 
+// セッションにユーザ情報を保持るので、express-sessionをuseしておく必要あり。
+app.use(
+  session({
+    secret: "himitsu",
+    resave: true,
+    saveUninitialized: false,
+  })
+);
+
+//
 // 渡された情報に合致するユーザがいるかを調べる
+//
 const verify = (username, password, done) => {
-  let u = dummy_database.find((u) => {
-    u.username == username && u.password == password;
-  });
-  if (u) {
-    return done(null, u);
+  console.log("verify(", username, ", ", password, ")");
+  for (let i = 0; i < dummy_database.length; i++) {
+    const u = dummy_database[i];
+    console.log("compare", username, password, u);
+    if (u.login_id == username && u.password == password) {
+      console.log("matched");
+      return done(null, u);
+    }
   }
+  console.log("NOT matched");
   return done(null, null, { message: "not found" });
 };
 
 //
 const strategy = new LocalStrategy(
   {
-    usernameField: "usename",
+    usernameField: "login_id",
     passwordField: "password",
   },
   verify
 );
 
+passport.use(strategy);
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.get("/login", (req, res: express.Response) => {
   res.render("login.ejs");
 });
 
-app.post("/login", (req, res: express.Response) => {
-  console.log(req.body);
-  res.redirect("/");
-});
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    successRedirect: "/",
+  })
+);
 
 app.get("/register", (req, res: express.Response) => {
   res.render("register.ejs");
