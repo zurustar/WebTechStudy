@@ -1,8 +1,11 @@
 import path from "path";
+import crypto from "crypto";
 import express from "express";
 import session from "express-session";
+import cookieParser from "cookie-parser";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import flash from "connect-flash";
 
 // passportの勉強用なのでDBはローカル変数でごまかす
 let dummy_database = [];
@@ -13,6 +16,7 @@ const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view eingine", "ejs");
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // セッションにユーザ情報を保持るので、express-sessionをuseしておく必要あり。
 app.use(
@@ -27,9 +31,11 @@ app.use(
 // 渡された情報に合致するユーザがいるかを調べる
 //
 const verify = (username, password, done) => {
+  const shasum = crypto.createHash("sha1").update(password);
+  const hashed_password = shasum.digest("hex");
   for (let i = 0; i < dummy_database.length; i++) {
     const u = dummy_database[i];
-    if (u.login_id == username && u.password == password) {
+    if (u.login_id === username && u.password === hashed_password) {
       return done(null, u);
     }
   }
@@ -54,11 +60,14 @@ passport.deserializeUser((user: string, done) => done(null, JSON.parse(user)));
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 //
 // ログイン画面の表示
 //
-app.get("/login", (req, res) => res.render("login.ejs"));
+app.get("/login", (req, res) =>
+  res.render("login.ejs", { message: req.flash("error") })
+);
 
 //
 // ログイン処理(passportに委ねる)
@@ -68,6 +77,8 @@ app.post(
   passport.authenticate("local", {
     failureRedirect: "/login", // 認証失敗時のリダイレクト先
     successRedirect: "/", // 認証成功時のリダイレクト先
+    session: true,
+    failureFlash: true,
   })
 );
 
@@ -80,11 +91,13 @@ app.get("/register", (req, res) => res.render("register.ejs"));
 // ユーザ登録処理
 //
 app.post("/register", (req, res: express.Response) => {
+  const shasum = crypto.createHash("sha1").update(req.body.password);
+  const hashed_password = shasum.digest("hex");
   const u = {
     login_id: req.body.login_id,
     email: req.body.email,
     realname: req.body.realname,
-    password: req.body.password, // TODO: ハッシュ化すべき
+    password: hashed_password,
   };
   dummy_database.push(u);
   res.redirect("/login");

@@ -9,6 +9,8 @@
   <body>
     <h1>login</h1>
 
+    <div><% if(message) { %> <%= message %> <% } %></div>
+
     <form action="/login" method="POST">
       <div>
         <label for="login_id">login-id</label>
