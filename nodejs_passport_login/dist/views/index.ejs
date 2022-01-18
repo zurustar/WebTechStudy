@@ -7,8 +7,11 @@
     <title>Document</title>
   </head>
   <body>
-    <h1>Hi <%= name %></h1>
-
+    <% if(typeof user['name'] === "undefined") { %>
+    <h1>who are you?</h1>
     <a href="/login">ログイン</a> | <a href="/register">登録</a>
+    <% } else { %>
+    <h1>Hi <%= (user.name) %></h1>
+    <% } %>
   </body>
 </html>
