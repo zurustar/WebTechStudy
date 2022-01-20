@@ -1,3 +1,4 @@
+import logger from "morgan";
 import path from "path";
 import crypto from "crypto";
 import express from "express";
@@ -11,6 +12,9 @@ import flash from "connect-flash";
 let dummy_database = [];
 
 const app = express();
+
+// 何はともあれロガー
+app.use(logger("combined"));
 
 // テンプレートエンジンとしてejsを使う。
 app.set("views", path.join(__dirname, "views"));
