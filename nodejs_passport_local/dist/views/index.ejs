@@ -14,5 +14,15 @@
     <h1>who are you?</h1>
     <a href="/login">ログイン</a> | <a href="/register">登録</a>
     <% } %>
+
+    <hr />
+
+    <h3>入力値検証実験</h3>
+
+    <form action="/validation" method="POST">
+      数字：<input type="text" name="number" /><br />
+      メアド：<input type="text" name="email" /><br />
+      <button type="submit">実験</button>
+    </form>
   </body>
 </html>

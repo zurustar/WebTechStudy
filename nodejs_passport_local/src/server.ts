@@ -2,6 +2,7 @@ import logger from "morgan";
 import path from "path";
 import crypto from "crypto";
 import express from "express";
+import { body, validationResult } from "express-validator";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import passport from "passport";
@@ -122,4 +123,24 @@ app.get("/logoff", (req, res) => {
   res.redirect("/");
 });
 
+//
+// express-validationを試す
+//
+app.post(
+  "/validation",
+  body("number").isInt(), // これがチェック処理。
+  body("email").isEmail(),
+  (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.render("validation_result.ejs", { msgs: errors.array() });
+      } else {
+        res.render("validation_result.ejs", { msgs: null });
+      }
+    } catch (e) {
+      res.status(500).end();
+    }
+  }
+);
 app.listen(3000);
